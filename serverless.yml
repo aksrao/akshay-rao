@@ -1,0 +1,28 @@
+service: slack-bot
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-south-1
+  environment:
+    SLACK_TOKEN: ${env:SLACK_TOKEN}
+    SIGNING_SECRET: ${env:SIGNING_SECRET}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+  - serverless-wsgi
+custom:
+  wsgi:
+    app: app.app
+    packRequirements: false
+  dockerizePip: true
+
+
+functions:
+  slackapp:
+    handler: wsgi.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
